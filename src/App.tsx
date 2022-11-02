@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+
 import { useOrderBook } from "./hooks/useOrderBook";
 import { useSymbolStream } from "./hooks/useSymbolStream";
+import { OrderBookTable } from "./components/OrderBookTable";
 
 interface symbolsInterface {
 	baseAsset: string;
@@ -66,37 +68,30 @@ function App() {
 
 	return (
 		<div>
-			<h1>
-				{selectedPair.label} <span>{currentPrice}</span>
-			</h1>
+			<h1>{selectedPair.label}</h1>
+			<h2>{currentPrice}</h2>
 
 			<Autocomplete
 				id="controllable-states-demo"
-				inputValue={filter || ""}
 				isOptionEqualToValue={(option, value) => option.label === value.label}
+				options={pairs || []}
+				renderInput={(params) => <TextField {...params} label="Pair" />}
+				value={selectedPair}
 				onChange={(_: any, newValue) => {
 					if (!newValue) return;
 					setSelectedPair(newValue as symbolsInterface);
 				}}
-				options={pairs || []}
-				renderInput={(params) => <TextField {...params} label="Pair" />}
-				sx={{ width: 300 }}
-				value={selectedPair}
+				sx={{
+					margin: "0 auto",
+					width: 200,
+				}}
+				inputValue={filter || ""}
 				onInputChange={(_: any, newInputValue: string) => {
 					setFilter(newInputValue);
 				}}
 			/>
 
-			{orders?.asks?.map((ask) => (
-				<>
-					<p key={Math.random()}>{ask}</p>
-				</>
-			))}
-			{orders?.bids?.map((ask) => (
-				<>
-					<p key={Math.random()}>{ask} ||</p>
-				</>
-			))}
+			<OrderBookTable orders={orders} />
 		</div>
 	);
 }
